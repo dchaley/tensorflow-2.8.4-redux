@@ -17,11 +17,11 @@
 #
 # You can use this image to quickly develop changes to the Dockerfile assembler
 # or set of TF Docker partials. See README.md for usage instructions.
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 LABEL maintainer="Austin Anderson <angerson@google.com>"
 
 RUN apt-get update && apt-get install -y python3 python3-pip bash curl docker.io
-RUN pip3 install --upgrade pip setuptools pyyaml absl-py cerberus 'docker<=4.3.0'
+RUN pip3 install --upgrade pip setuptools pyyaml absl-py cerberus 'docker<=4.3.0' 'requests==2.31.0' 'urllib3==1.26.18'
 
 WORKDIR /tf
 VOLUME ["/tf"]

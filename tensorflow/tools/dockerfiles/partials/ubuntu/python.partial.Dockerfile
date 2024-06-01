@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip
 
 RUN python3 -m pip --no-cache-dir install --upgrade \
-    "pip<20.3" \
+    "pip<=24.0" \
     setuptools
 
 # Some TF tools expect a "python" binary
