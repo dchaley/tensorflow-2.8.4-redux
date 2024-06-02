@@ -1,7 +1,7 @@
 ARG ARCH=
 ARG CUDA=11.8
 ARG CUDA_PATCH=0
-FROM nvidia/cuda${ARCH:+-$ARCH}:${CUDA}.${CUDA_PATCH}-base-ubuntu${UBUNTU_VERSION} as base
+FROM nvidia/cuda${ARCH:+-$ARCH}:${CUDA}.${CUDA_PATCH}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as base
 # ARCH and CUDA are specified again because the FROM directive resets ARGs
 # (but their default value is retained if set previously)
 ARG ARCH
@@ -17,18 +17,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
+
 # Pick up some TF dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
-        cuda-command-line-tools-${CUDA/./-} \
-        libcublas-${CUDA/./-} \
-        cuda-nvrtc-${CUDA/./-} \
-        libcufft-${CUDA/./-} \
-        libcurand-${CUDA/./-} \
-        libcusolver-${CUDA/./-} \
-        libcusparse-${CUDA/./-} \
         curl \
-        libcudnn8=${CUDNN}+cuda${CUDA} \
         libfreetype6-dev \
         libhdf5-serial-dev \
         libzmq3-dev \
@@ -52,5 +45,5 @@ ENV LD_LIBRARY_PATH /usr/local/cuda-${CUDA}/targets/x86_64-linux/lib:/usr/local/
 
 # Link the libcuda stub to the location where tensorflow is searching for it and reconfigure
 # dynamic linker run-time bindings
-RUN echo "/usr/local/cuda-11.8/compat" > /etc/ld.so.conf.d/z-cuda-stubs.conf \
+RUN echo "/usr/local/cuda/compat" > /etc/ld.so.conf.d/z-cuda-stubs.conf \
     && ldconfig
