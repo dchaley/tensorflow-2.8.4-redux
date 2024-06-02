@@ -4,35 +4,40 @@
 
 This repo forks the main [TensorFlow repo](https://github.com/tensorflow/tensorflow). It provides a mechanism to rebuild the [official 2.8.4 version container](https://hub.docker.com/layers/tensorflow/tensorflow/2.8.4-gpu/images/sha256-4351b59baf4887bcf47eb78b34267786f40460a81fef03c9b9f58e7d58f1c7b7?context=explore) using modern OS bases, in particular Ubuntu 22.04 (vs the previous 20.04).
 
-When we built a DeepCell container [using the official 2.8.4 base](https://github.com/dchaley/deepcell-imaging/blob/26e3f4e0797ef9028f67796ad3d70effcc27b545/container/Dockerfile), and the Google vulnerabilities scanner found 548 issues.
+The process is explained in detail in this post: [Rebuilding TensorFlow 2.8.4 on Ubuntu 22.04 to patch vulnerabilities](https://dev.to/dchaley/rebuilding-tensorflow-284-on-ubuntu-2204-to-patch-vulnerabilities-3j3m).
 
-![Screenshot 2024-05-28 at 12 40 29 PM](https://github.com/dchaley/tensorflow-2.8.4-redux/assets/352005/106bfbf4-8cb2-434a-b739-b34a7d28bb5d)
+Here is the summary of changes.
 
-There were 15 "High" severity vulnerabilities according to the Google vulnerabilities scanner.
+| | DeepCell +  tensorflow-2.8.4 | DeepCell + tensorflow-2.8.4-redux | Delta |
+| ------ | --- | --- | --- |
+| **Compressed size** | 3.2GB | 4.0 GB | **+0.8 GB (+25%)** |
+| **VULNs** | 553 | 125 | **-428 (-77%)** |
+| Critical | 1 | 1 | 0 (0%) |
+| High | 80 | 29 | -51 (-63%) |
+| Medium | 349 | 53 | -296 (-85%) |
+| Low | 123 | 42 | -81 (-66%) |
 
-![Screenshot of the Google container vulnerability scanner for the official container](official-container-vulnerabilities.png)
-
-The rebuilt base container has 125 vulnerabilities:
-
-![Screenshot 2024-05-28 at 12 39 39 PM](https://github.com/dchaley/tensorflow-2.8.4-redux/assets/352005/18fa1e55-e01d-462d-a9c5-640150a2e87f)
-
-The rebuilt DeepCell container has 129:
-
-![Screenshot 2024-05-28 at 12 41 55 PM](https://github.com/dchaley/tensorflow-2.8.4-redux/assets/352005/c739d81f-088b-4d09-be02-1de59ea95aae)
-
-TODO: count the change per category.
+Great to see so many VULNs fixed. Bummer to see the size go up by 25%.
 
 ## Building the container
 
-TODO: instructions
+Follow the process in the [TensorFlow README](https://github.com/dchaley/tensorflow-2.8.4-redux/tree/master/tensorflow/tools/dockerfiles), like so:
 
-At this point, you have a container you can tag & push. In our case,
+```
+# Build the tools-helper image so you can run the assembler
+$ docker build -t tf-tools -f tools.Dockerfile .
 
-```bash
-docker tag tensorflow:2.8.4-rebuilt-gpu us-central1-docker.pkg.dev/deepcell-on-batch/deepcell-be
-nchmarking-us-central1/base-tf-2.8.4-rebuilt-gpu
-docker push us-central1-docker.pkg.dev/deepcell-on-batch/deepcell-benchmarking-us-central1/base-
-tf-2.8.4-rebuilt-gpu
+# Set the alias to build an image.
+$ alias asm_images="docker run --rm -v $(pwd):/tf -v /var/run/docker.sock:/var/run/docker.sock tf-tools python3 assembler.py "
+
+# Rebuild just the 2.8.4 GPU image.
+$ asm_images --release versioned --arg _TAG_PREFIX=2.8.4-rebuilt --build_images --only_tags_matching="^2.8.4-rebuilt-gpu$"
+
+# Tag the image as desired. I did this:
+$ docker tag tensorflow:2.8.4-rebuilt-gpu ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/base-tf-2.8.4-rebuilt-gpu:11.8.0-cudnn8-runtime-ubuntu22.04
+
+# Push the image.
+$ docker push ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/base-tf-2.8.4-rebuilt-gpu:11.8.0-cudnn8-runtime-ubuntu22.04
 ```
 
 Yay 🎉
