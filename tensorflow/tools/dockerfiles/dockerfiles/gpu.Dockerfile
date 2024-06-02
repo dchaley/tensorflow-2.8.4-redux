@@ -71,6 +71,8 @@ ENV LD_LIBRARY_PATH /usr/local/cuda-${CUDA}/targets/x86_64-linux/lib:/usr/local/
 RUN echo "/usr/local/cuda/compat" > /etc/ld.so.conf.d/z-cuda-stubs.conf \
     && ldconfig
 
+COPY partials/ubuntu/ptxas.binary.x86_64 /usr/bin/ptxas
+
 # See http://bugs.python.org/issue19846
 ENV LANG C.UTF-8
 

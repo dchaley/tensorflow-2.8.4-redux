@@ -47,3 +47,5 @@ ENV LD_LIBRARY_PATH /usr/local/cuda-${CUDA}/targets/x86_64-linux/lib:/usr/local/
 # dynamic linker run-time bindings
 RUN echo "/usr/local/cuda/compat" > /etc/ld.so.conf.d/z-cuda-stubs.conf \
     && ldconfig
+
+COPY partials/ubuntu/ptxas.binary.x86_64 /usr/bin/ptxas
