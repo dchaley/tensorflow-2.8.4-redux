@@ -21,7 +21,9 @@ Great to see so many VULNs fixed. Bummer to see the size go up by 25%.
 
 ## Building the container
 
-Follow the process in the [TensorFlow README](https://github.com/dchaley/tensorflow-2.8.4-redux/tree/master/tensorflow/tools/dockerfiles), like so:
+Follow the process in the [TensorFlow README](https://github.com/dchaley/tensorflow-2.8.4-redux/tree/master/tensorflow/tools/dockerfiles), like so.
+
+Make sure you build on an x86_64 architecture if you plan to run on normal GCP instances.
 
 ```
 # From the project root,
