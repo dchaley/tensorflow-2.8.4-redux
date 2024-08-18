@@ -24,6 +24,9 @@ Great to see so many VULNs fixed. Bummer to see the size go up by 25%.
 Follow the process in the [TensorFlow README](https://github.com/dchaley/tensorflow-2.8.4-redux/tree/master/tensorflow/tools/dockerfiles), like so:
 
 ```
+# From the project root,
+$ cd tensorflow/tools/dockerfiles
+
 # Build the tools-helper image so you can run the assembler
 $ docker build -t tf-tools -f tools.Dockerfile .
 
